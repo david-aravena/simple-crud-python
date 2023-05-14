@@ -3,15 +3,15 @@ from db.validations import user_exists
 
 
 @clear_terminal
-def create_user(connect, cursor):
+def create_user(connect, db):
     """A - Crear usuario"""
 
     username = input("Ingresa un nombre: ")
     email = input("Ingresa un email: ")
-    if not user_exists(username, email, cursor):
+    if not user_exists(username, email, db):
         query = "INSERT INTO users(username, email) VALUES (%s, %s)"
         values = (username, email)
-        cursor.execute(query, values)
+        db.execute(query, values)
         connect.commit()
         print("Usuario creado")
     else:
@@ -19,35 +19,35 @@ def create_user(connect, cursor):
 
 
 @clear_terminal
-def list_users(connect, cursor):
+def list_users(connect, db):
     """B - Listar usuarios"""
 
     query = "SELECT id, username, email FROM users"
-    cursor.execute(query)
+    db.execute(query)
 
     print("Listado de usuarios")
 
-    for id, username, email in cursor.fetchall():
+    for id, username, email in db.fetchall():
         print(id, '-', username, '-', email)
     
 
 @clear_terminal
 @find_users
-def update_user(connect, cursor):
+def update_user(connect, db):
     """C - Actualizar usuario"""
 
     user = int(input("Ingresa el número del usuario a actualizar: "))
     query = "SELECT id FROM users WHERE id = %s"
-    cursor.execute(query, (user,))
+    db.execute(query, (user,))
 
-    user_selected = cursor.fetchone()
+    user_selected = db.fetchone()
     if user_selected:
         username = input("Ingresa un nuevo username: ")
         email = input("Ingresa un nuevo email: ")
 
         query = "UPDATE users SET username = %s, email = %s WHERE id = %s"
         values = (username, email, user)
-        cursor.execute(query, values)
+        db.execute(query, values)
         connect.commit()
         print("Usuario actualizado exitosamente")
     else:
@@ -55,17 +55,17 @@ def update_user(connect, cursor):
 
 @clear_terminal
 @find_users
-def delete_user(connect, cursor, users):
+def delete_user(connect, db, users):
     """D - Eliminar usuario"""
     
     user = int(input("Ingresa el número del usuario a eliminar: "))
     query = "SELECT id FROM users WHERE id = %s"
-    cursor.execute(query, (user,))
+    db.execute(query, (user,))
 
-    user_selected = cursor.fetchone()
+    user_selected = db.fetchone()
     if user_selected:
         query = "DELETE FROM users WHERE id = %s"
-        cursor.execute(query, (user,))
+        db.execute(query, (user,))
         connect.commit()
         print("Usuario eliminado exitosamente")
     else:

@@ -7,9 +7,9 @@ USERS_TABLE = """CREATE TABLE users(
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )"""
 
-def table_exists(table, cursor):
-    cursor.execute("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)", (table,))
-    exists = cursor.fetchone()[0]
+def table_exists(table, db):
+    db.execute("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)", (table,))
+    exists = db.fetchone()[0]
     if exists:
         return True
     else:

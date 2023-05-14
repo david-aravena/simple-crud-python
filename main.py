@@ -4,32 +4,31 @@ from db.config import CONNECT, OPERATIONAL_ERROR
 
 if __name__ == "__main__":
 
-    options = {
+    menu_options = {
         'a': create_user,
         'b': list_users,
         'c': update_user,
         'd': delete_user
     }
 
-    try:
-        with CONNECT.cursor() as cursor:
+    while True:
+        try:
+            with CONNECT.cursor() as db:
+                if not table_exists('users', db):
+                    db.execute(USERS_TABLE)
+                    CONNECT.commit()
 
-            if not table_exists('users', cursor):
-                cursor.execute(USERS_TABLE)
-                CONNECT.commit()
-
-            while True:
-                for function in options.values():
+                for function in menu_options.values():
                     print(function.__doc__)
 
                 print("Q - Salir del programa")
-                option = input("Selecciona una opcion valida: ").lower()
+                option_selected = input("Selecciona una opción válida: ").lower()
 
-                if option == "q":
+                if option_selected == "q":
                     break
 
-                function = options.get(option, default)
-                function(CONNECT, cursor)
+                function_menu = menu_options.get(option_selected, default)
+                function_menu(CONNECT, db)
 
-    except OPERATIONAL_ERROR as err:
-        print(f'Ha ocurrido el siguiente error: {err}')
+        except OPERATIONAL_ERROR as err:
+            print(f'Ha ocurrido el siguiente error: {err}')
